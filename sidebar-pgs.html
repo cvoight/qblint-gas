@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+  <?!= include("sidebarcss-common"); ?>
+  <?!= include("sidebarcss-pgs"); ?>
+</head>
+<body>
+  <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+  <div class="column"></div>
+  <script>
+    const hide = e => { e.hidden = true };
+    const show = e => { e.hidden = false };
+    const hideLoading = () => { hide(document.querySelector(".lds-ring")) };
+    const showLoading = () => { show(document.querySelector(".lds-ring")) };
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
+    function escapeRegExp (s) {
+      return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+    function stylePG(s, k, pg) {
+      const re = new RegExp(`(?<=\\W|^)${escapeRegExp(k)}(?=\\W|$)`);
+      return s.replace(re, `<strong>$&</strong> <mark>(“${pg}”)</mark>`);
+    }
+    function displayPGs(arr) {
+      const cards = `
+        ${arr.map((e) => `
+          <div class="card">
+          <p data-keyword="${e.keyword}" data-pg="${e.pg}">${stylePG(e.sentence, e.keyword, e.pg)}</p>
+          </div>`)
+          .join("")}
+        `;
+      hideLoading();
+      document.querySelector("div.column").insertAdjacentHTML("beforeend", cards);
+      selectPGhook();
+    }
+    function selectPGhook() {
+      const es = document.querySelectorAll("p");
+      for (const e of es) {
+        e.addEventListener("click", () => {
+          const pg = e.getAttribute("data-pg");
+          const s = e.innerText.match(
+            `[^\n\r\f]{0,10}${escapeRegExp(e.getAttribute("data-keyword"))}`
+          );
+          e.style.opacity = 0;
+          google.script.run
+            .withSuccessHandler(insertPGsuccess)
+            .withFailureHandler(insertPGfailure)
+            .insertPGs(s, pg);
+        });
+        e.addEventListener("mousedown", (event) => {
+          if (event.button === 1) event.preventDefault();
+        });
+        e.addEventListener("contextmenu", (event) => event.preventDefault());
+        e.addEventListener("auxclick", (event) => {
+          event.preventDefault();
+          if (event.button === 1) {
+            navigator.clipboard.writeText(`(${e.getAttribute("data-pg")})`);
+          }
+          if (event.button === 2) e.style.opacity = 0;
+        });
+        e.addEventListener("transitionend", () => {
+          e.remove();
+        });
+      }
+    }
+    function insertPGsuccess() { }
+    function insertPGfailure() {
+      window.alert("Unknown failure :(");
+    }
+    window.onload = (event) => {
+      showLoading();
+      google.script.run.withSuccessHandler(displayPGs).getPGs();
+    };
+  </script>
+</body>
+</html>

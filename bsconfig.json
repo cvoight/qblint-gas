@@ -1,0 +1,14 @@
+{
+  "name": "qblint",
+  "sources": {
+    "dir": "src",
+    "subdirs": true
+  },
+  "package-specs": {
+    "module": "es6",
+    "in-source": true
+  },
+  "suffix": ".bs.js",
+  "bsc-flags": ["-open RescriptCore"],
+  "bs-dependencies": ["@rescript/core"]
+}

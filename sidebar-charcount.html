@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+  <?!= include("sidebarcss-common"); ?>
+  <?!= include("sidebarcss-charcount"); ?>
+  <title></title>
+</head>
+<body>
+  <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+  <div class="column"></div>
+  <script>
+    const hide = e => { e.hidden = true };
+    const show = e => { e.hidden = false };
+    const hideLoading = () => { hide(document.querySelector(".lds-ring")) };
+    const showLoading = () => { show(document.querySelector(".lds-ring")) };
+    function displayCharCount(arr) {
+      const cards = `
+        ${arr.map((e) => `
+          <div class="card">
+          <p data-answer="ANSWER: ${e[1].split(' / ')[0]}"><strong>${e[1]}</strong> ${e[0]}</p>
+          </div>`)
+          .join("")}
+        `;
+      hideLoading();
+      document.querySelector("div.column").insertAdjacentHTML("beforeend", cards);
+      addCursorHook();
+    }
+    function addCursorHook() {
+      const ps = document.querySelectorAll("p");
+      for (const p of ps) {
+        p.addEventListener("click", () => {
+          google.script.run.withSuccessHandler().moveCursor(p.getElementsByTagName("strong")[0].textContent.split(" / ")[0], p.getAttribute("data-answer"));
+        });
+      }
+    }
+    window.onload = (event) => {
+      showLoading();
+      google.script.run.withSuccessHandler(displayCharCount).getCharCount();
+    };
+  </script>
+</body>
+</html>

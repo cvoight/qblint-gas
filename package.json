@@ -1,0 +1,16 @@
+{
+  "name": "qblint",
+  "scripts": {
+    "dev": "rescript",
+    "build": "rescript && rollup --config",
+    "clean": "rescript clean",
+    "deploy": "clasp push"
+  },
+  "dependencies": {
+    "rescript": "^11.0.0-rc.3",
+    "@rescript/core": "^0.5.0",
+    "rollup": "^3.29.4",
+    "@rollup/plugin-node-resolve": "^15.2.1",
+    "rollup-plugin-strip-final-exports": "^1.0.0"
+  }
+}

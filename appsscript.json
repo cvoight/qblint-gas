@@ -1,0 +1,25 @@
+{
+  "timeZone": "America/New_York",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "BigQuery",
+        "version": "v2",
+        "serviceId": "bigquery"
+      },
+      {
+        "userSymbol": "Docs",
+        "version": "v1",
+        "serviceId": "docs"
+      }
+    ]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/documents.currentonly",
+    "https://www.googleapis.com/auth/script.container.ui",
+    "https://www.googleapis.com/auth/bigquery.readonly"
+  ]
+}

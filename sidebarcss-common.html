@@ -1,0 +1,73 @@
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Slab:wght@400;600&display=swap");
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font: 400 80%/1.2 "Roboto Slab", serif;
+    margin: 8px 0px;
+    background: #fff;
+    width: 100%;
+  }
+  div.column {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    row-gap: 8px;
+  }
+  div.card {
+    text-align: left;
+    background-color: #f5f8ff;
+    border: solid #CCC;
+    border-width: 0 0 0 3px;
+  }
+  [hidden] {
+    display: none !important;
+  }
+  /* from https://loading.io/css/ */
+  .lds-ring,
+  .lds-ring div {
+    box-sizing: border-box;
+  }
+  .lds-ring {
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+     
+    transform: translate(-40px, -84px);
+  }
+  .lds-ring div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border: 8px solid #0038a8;
+    border-radius: 50%;
+    animation: lds-ring 1.236s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: #0038a8 transparent transparent transparent;
+  }
+  .lds-ring div:nth-child(1) {
+    animation-delay: -0.45s;
+  }
+  .lds-ring div:nth-child(2) {
+    animation-delay: -0.3s;
+  }
+  .lds-ring div:nth-child(3) {
+    animation-delay: -0.15s;
+  }
+  @keyframes lds-ring {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+</style>
