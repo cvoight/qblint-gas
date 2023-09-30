@@ -2,19 +2,19 @@ open DocumentApp
 open Docs
 open Schema
 
-let getPlainText = contents => {
-    let plainText = content => {
-        let textRuns = element => {
-            switch element.textRun {
-            | Some({content}) => Some(content)
-            | _ => None }
-        }
-        switch content.paragraph {
-        | Some({elements}) => Some(elements->Array.filterMap(textRuns))
-        | _ => None }
-    }
-    contents->Array.filterMap(plainText)->Array.flat->Array.joinWith("")
-}
+// let getPlainText = contents => {
+//     let plainText = content => {
+//         let textRuns = element => {
+//             switch element.textRun {
+//             | Some({content}) => Some(content)
+//             | _ => None }
+//         }
+//         switch content.paragraph {
+//         | Some({elements}) => Some(elements->Array.filterMap(textRuns))
+//         | _ => None }
+//     }
+//     contents->Array.filterMap(plainText)->Array.flat->Array.joinWith("")
+// }
 
 let parseToCharCount = text => {
     let partition = e => {
@@ -54,8 +54,9 @@ let parseToCharCount = text => {
 }
 
 let getCharCount = () => {
-    let doc = getActiveDocument()->getDocumentId->getDocumentFromId
-    doc.body.content->getPlainText->parseToCharCount
+    // let doc = getActiveDocument()->getDocumentId->getDocumentFromId
+    // doc.body.content->getPlainText->parseToCharCount
+    getActiveDocument()->getBody->getText->parseToCharCount
 }
 
 let makeUpdateRequest = contents => {
