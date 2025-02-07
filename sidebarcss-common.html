@@ -1,28 +1,162 @@
 <style>
-  @import url("https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Slab:wght@400;600&display=swap");
-  * {
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,600&display=swap');
+  @import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300;400;700&display=swap");
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,600&display=swap');
+  :root {
+    --bg-color: #fff;
+    --bg-secondary-color: #f3f3f6;
+    --color-primary: #14854f;
+    --color-lightGrey: #d2d6dd;
+    --color-grey: #747681;
+    --color-darkGrey: #3f4144;
+    --color-error: #d43939;
+    --color-warning: #ff851b;
+    --color-success: #28bd14;
+    --font-color: #333;
+  }
+  html {
+    -webkit-box-sizing: border-box;
     box-sizing: border-box;
+    font-size: 62.5%;
+    width: 100%;
+    scrollbar-gutter: stable;
+  }
+  *, ::before, ::after {
+    -webkit-box-sizing: inherit;
+    box-sizing: inherit;
   }
   body {
-    font: 400 80%/1.2 "Roboto Slab", serif;
-    margin: 8px 0px;
-    background: #fff;
-    width: 100%;
+    font: 400 1.28rem/1.0 "Source Serif 4", serif;
+    margin: 1rem 1rem;
+    background: var(--bg-secondary-color);
   }
   div.column {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    row-gap: 8px;
+    row-gap: 1rem;
+/*    width: 100%;*/
   }
   div.card {
-    text-align: left;
-    background-color: #f5f8ff;
-    border: solid #CCC;
-    border-width: 0 0 0 3px;
+    padding: 1rem 1rem;
+    border-radius: 0.4rem;
+    background: var(--bg-color);
+    -webkit-box-shadow: 0 1px 3px var(--color-grey);
+    box-shadow: 0 1px 3px var(--color-grey);
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+  }
+  .light {
+    font-weight: 300;
+  }
+  strong {
+    font-weight: 600;
+  }
+  div.card div:first-child {
+    width: 4rem;
+    flex: 0 0 auto;
+  }
+  div.card div:last-child {
+    flex: auto 0 auto;
+    line-height: 1.2;
+  }
+  [role="button"] {
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  [role="button"]:hover,
+  [role="button"]:focus,
+  [role="button"]:active {
+    border-color: #9b4dca;
+    outline: 0;
+  }
+  div.card header > * {
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+  div.card p:last-child {
+    margin: 0;
   }
   [hidden] {
     display: none !important;
+  }
+  form {
+    margin-bottom: 2rem;
+  }
+  fieldset {
+    border: 1px solid #ebebeb;
+    border-radius: 0.4rem;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: first baseline;
+  }
+  fieldset div.align-end {
+    justify-self: end;
+  }
+  legend {
+    font-weight: 700;
+    padding: 1rem;
+  }
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  label.inline {
+    display: inline-block;
+  }
+  input[type="number"],
+  input[type="text"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    border: 0.1rem solid #d1d1d1;
+    border-radius: 0.4rem;
+    height: 3.8rem;
+    padding: 0.6rem 1.0rem 0.7rem;
+    width: 100%;
+  }
+  input[type="number"]:focus,
+  input[type="text"]:focus {
+    border-color: #9b4dca;
+    outline: 0;
+  }
+  input[type="submit"] {
+    background-color: #9b4dca;
+    border: 0.1rem solid #9b4dca;
+    border-radius: 0.4rem;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    height: 3.8rem;
+    letter-spacing: 0.1rem;
+    line-height: 3.8rem;
+    padding: 0 3.0rem;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  input[type="submit"]:focus,
+  input[type="submit"]:hover {
+    background-color: #606c76;
+    border-color: #606c76;
+    color: #fff;
+    outline: 0;
+  }
+  input[type="submit"][disabled] {
+    cursor: default;
+    opacity: 0.5;
+  }
+  input[type="submit"][disabled]:focus,
+  input[type="submit"][disabled]:hover {
+    background-color: #9b4dca;
+    border-color: #9b4dca;
   }
   /* from https://loading.io/css/ */
   .lds-ring,

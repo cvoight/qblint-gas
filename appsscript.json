@@ -3,14 +3,16 @@
   "dependencies": {
     "enabledAdvancedServices": [
       {
-        "userSymbol": "BigQuery",
-        "version": "v2",
-        "serviceId": "bigquery"
-      },
-      {
         "userSymbol": "Docs",
         "version": "v1",
         "serviceId": "docs"
+      }
+    ],
+    "libraries": [
+      {
+        "userSymbol": "OAuth2",
+        "version": "43",
+        "libraryId": "1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF"
       }
     ]
   },
@@ -20,6 +22,6 @@
     "https://www.googleapis.com/auth/drive",
     "https://www.googleapis.com/auth/documents.currentonly",
     "https://www.googleapis.com/auth/script.container.ui",
-    "https://www.googleapis.com/auth/bigquery.readonly"
+    "https://www.googleapis.com/auth/script.external_request"
   ]
 }

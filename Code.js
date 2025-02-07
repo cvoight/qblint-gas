@@ -13,13 +13,16 @@ function onInstall(e) {
 }
 
 const include = (fn) => HtmlService.createHtmlOutputFromFile(fn).getContent();
-const showSidebarLint = () => render("sidebar-lint", "QBLint Results");
-const showSidebarPgs = () => render("sidebar-pgs", "Place PGs");
-const showSidebarCharCount = () => render("sidebar-charcount", "Character Counts");
+// const showSidebarLint = () => render("sidebar-lint", "QBLint Results");
+// const showSidebarPgs = () => render("sidebar-pgs", "Place PGs");
+// const showSidebarCharCount = () => render("sidebar-charcount", "Character Counts");
+const showSidebarLint = () => render("sidebar-lint");
+const showSidebarPgs = () => render("sidebar-pgs");
+const showSidebarCharCount = () => render("sidebar-charcount");
 const render = (fn, title) => {
   const html = HtmlService.createTemplateFromFile(fn)
     .evaluate()
-    .setTitle(title);
+    .setTitle("qblint");
   DocumentApp.getUi().showSidebar(html);
 };
 
@@ -47,13 +50,16 @@ function moveCursor(string, sentence) {
 function getLint() {
   const doc = DocumentApp.getActiveDocument();
   const docId = doc.getId();
-  const jsonFiles = DriveApp.getFilesByName(docId + ".json");
+  const jsonFiles = DriveApp.getFilesByName(docId);
   let json = "";
   while (jsonFiles.hasNext()) {
     json += jsonFiles.next().getBlob().getDataAsString();
   }
+  if (json.length === 0) {
+    json += `{"matches": [{"message":"No lint file found.","context":{"text":"Please upload a valid lint result.","offset":16,"length":5},"sentence":"Please upload a valid lint result to Google Drive."}]}`  
+  }
 
-  const data = JSON.parse(json);
+  const data = JSON.parse(json); 
   return Object.entries(data.matches).map(([k, v]) => {
     const text = data.matches[k].context.text;
     const i = parseInt(data.matches[k].context.offset);

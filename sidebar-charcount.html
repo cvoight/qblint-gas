@@ -2,13 +2,37 @@
 <html>
 <head>
   <base target="_top">
-  <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
   <?!= include("sidebarcss-common"); ?>
-  <?!= include("sidebarcss-charcount"); ?>
   <title></title>
 </head>
 <body>
   <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+  <!-- <form>
+    <fieldset>
+      <legend>Character Caps</legend>
+      <div>
+        <label for="tossupCap">Tossups</label>
+        <input type="text" id="tossupCap">
+      </div>
+      <div>
+        <label for="bonusCap">Bonuses</label>
+        <input type="text" id="bonusCap">
+      </div> -->
+      <!-- <div>
+        <label for="softCapPercent">Soft Cap %</label>
+        <input type="text" id="softCapPercent">
+      </div>
+      <div>
+        <input type="checkbox" id="capType">
+        <label class="inline" for="capType">Soft Cap? (+10%)</label>
+      </div>
+      <div></div>
+      <div></div> -->
+      <!-- <div class="align-end">
+        <input class="button" type="submit" value="Update">
+      </div>
+    </fieldset>
+  </form> -->
   <div class="column"></div>
   <script>
     const hide = e => { e.hidden = true };
@@ -18,21 +42,34 @@
     function displayCharCount(arr) {
       const cards = `
         ${arr.map((e) => `
-          <div class="card">
-          <p data-answer="ANSWER: ${e[1].split(' / ')[0]}"><strong>${e[1]}</strong> ${e[0]}</p>
+          <div class="card" role="button" tabindex="0" data-answer="ANSWER: ${e[1].split(' / ')[0]}">
+            <div class="light">${e[0]}</div><div>${e[1]}</div>
           </div>`)
           .join("")}
         `;
       hideLoading();
       document.querySelector("div.column").insertAdjacentHTML("beforeend", cards);
-      addCursorHook();
+      addListeners();
     }
-    function addCursorHook() {
-      const ps = document.querySelectorAll("p");
-      for (const p of ps) {
-        p.addEventListener("click", () => {
-          google.script.run.withSuccessHandler().moveCursor(p.getElementsByTagName("strong")[0].textContent.split(" / ")[0], p.getAttribute("data-answer"));
-        });
+    function addListeners() {
+      const handler = e => google.script.run.moveCursor(e.getAttribute("data-answer").slice(8), e.getAttribute("data-answer"));
+      function clickHandler(event) {
+        handler(event.currentTarget);
+      }
+      function keydownHandler(event) {
+        switch (event.key) {
+          case "Enter":
+          case "Space":
+            handler(event.currentTarget);
+            break;
+          default:
+            return;
+        }
+      }
+      const cs = document.querySelectorAll('[role="button"]');
+      for (const c of cs) {
+        c.addEventListener("click", clickHandler);
+        c.addEventListener("keydown", keydownHandler);
       }
     }
     window.onload = (event) => {

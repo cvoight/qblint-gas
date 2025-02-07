@@ -4,7 +4,16 @@
   <base target="_top">
   <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
   <?!= include("sidebarcss-common"); ?>
-  <?!= include("sidebarcss-pgs"); ?>
+  <style>
+    p[role="button"] {
+      transition: opacity 0.618s;
+    }
+    mark {
+      font: 600 "Source Sans 3", sans-serif;
+      color: gray;
+      background-color: transparent;
+    }
+  </style>
 </head>
 <body>
   <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
@@ -23,10 +32,11 @@
       return s.replace(re, `<strong>$&</strong> <mark>(“${pg}”)</mark>`);
     }
     function displayPGs(arr) {
-      const cards = `
-        ${arr.map((e) => `
+      const cards = (arr.length === 0) ?
+        `<div class="card"><p><strong>No matches found.</strong> <mark>Please upload a valid lint result to Google Drive.</mark></p></div>` :
+        `${arr.map((e) => `
           <div class="card">
-          <p data-keyword="${e.keyword}" data-pg="${e.pg}">${stylePG(e.sentence, e.keyword, e.pg)}</p>
+          <p role="button" data-keyword="${e.keyword}" data-pg="${e.pg}">${stylePG(e.sentence, e.keyword, e.pg)}</p>
           </div>`)
           .join("")}
         `;
@@ -60,7 +70,7 @@
           if (event.button === 2) e.style.opacity = 0;
         });
         e.addEventListener("transitionend", () => {
-          e.remove();
+          e.parentElement.remove();
         });
       }
     }

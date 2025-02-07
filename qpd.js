@@ -1,33 +1,58 @@
 // Script Properties
-const scriptProperties = () => PropertiesService.getScriptProperties();
+// const scriptProperties = PropertiesService.getScriptProperties();
+// const userProperties = PropertiesService.getUserProperties();
+// const documentProperties = PropertiesService.getDocumentProperties();
 
 const defaultSettings = {
   font: "Source Sans Pro",
   color: "#777777",
   concatenate: "false",
+  tossupCap: 800,
+  bonusCap: 800,
 };
 
 class Settings {
   constructor() {
-    const scriptSettings = scriptProperties().getProperties();
-    Object.assign(this, defaultSettings, scriptSettings);
+    const userSettings = PropertiesService.getUserProperties().getProperties();
+    const documentSettings = PropertiesService.getDocumentProperties().getProperties();
+    Object.assign(this, defaultSettings, userSettings, documentSettings);
     return new Proxy(this, {
       get(target, key) {
-        return scriptProperties().getProperty(key) ?? defaultSettings[key];
+        return PropertiesService.getUserProperties().getProperty(key) ?? defaultSettings[key];
       },
     });
   }
 }
 
-const scriptOptions = new Settings();
-const getSettings = () => scriptOptions;
-const setSettings = (o) => (scriptProperties().setProperties(o), o);
+// const scriptOptions = new Settings();
+const getSettings = () => new Settings();
+const setSettings = (o) => (PropertiesService.getScriptProperties().setProperties(o), o);
+
+function getServiceAccountCreds() {
+  return JSON.parse(PropertiesService.getScriptProperties().getProperty("SERVICE_ACCOUNT_CREDS"));
+}
+
+function getOauthService() {
+  const serviceAccountCreds = getServiceAccountCreds();
+  const scopes = [
+    "https://www.googleapis.com/auth/bigquery.readonly",
+    "https://www.googleapis.com/auth/drive"
+  ];
+  return OAuth2.createService("BigQuery")
+    .setAuthorizationBaseUrl("https://accounts.google.com/o/oauth2/auth")
+    .setTokenUrl("https://accounts.google.com/o/oauth2/token")
+    .setPrivateKey(serviceAccountCreds["private_key"])
+    .setIssuer(serviceAccountCreds["client_email"])
+    .setPropertyStore(PropertiesService.getScriptProperties())
+    .setCache(CacheService.getScriptCache())
+    .setScope(scopes);
+}
 
 // The Quizbowl Pronouncing Dictionary is licensed under the
 // Open Database License (ODbL).
 function retrieveDb() {
   const cache = CacheService.getScriptCache();
-  const ids = "abcdefghij".split("");
+  const ids = "abcdefghijklmnop".split("");
   const cached = cache.getAll(ids);
   if (ids.every((e) => Object.keys(cached).includes(e))) {
     let values = new Array();
@@ -37,27 +62,43 @@ function retrieveDb() {
     return values.flat();
   }
 
-  const projectId = "319846857584";
-  // ignore duplicate column for now
-  const query = `SELECT word, pg
-    FROM \`qblint.pgdb.pgs_2023-09-26\`
-    WHERE (exemplar IS NULL OR exemplar <> 2)
-    AND (utility IS NULL OR utility > 0)`;
-  const request = {
-    query: query,
-    useLegacySql: false,
-  };
+  const accessToken = getOauthService().getAccessToken();
+  const serviceAccountCreds = getServiceAccountCreds();
+  const projectId = serviceAccountCreds["project_id"];
 
-  let result = BigQuery.Jobs.query(request, projectId);
+  const query =
+    `SELECT word, pg
+    FROM \`qblint.pgdb.pgs_2023-09-26\`
+    WHERE (exemplar IS NULL OR (exemplar <> 2 AND exemplar <> 3))
+    AND (utility IS NULL OR utility > 0)`;
+  const request = { query: query, useLegacySql: false };
+  const startOptions = {
+    "method": "post",
+    "headers": {
+      "Authorization": `Bearer ${accessToken}`
+    },
+    "contentType": "application/json",
+    "payload": JSON.stringify(request)
+  };
+  const url = `https://bigquery.googleapis.com/bigquery/v2/projects/${projectId}/queries`
+  let response = UrlFetchApp.fetch(url, startOptions);
+  let result = JSON.parse(response);
   let sleepTimeMs = 500;
+  const getOptions = {
+    "method": "get",
+    "headers": {
+      "Authorization": `Bearer ${accessToken}`
+    },
+    "contentType": "application/json",
+  };
   while (!result.jobComplete) {
+    let jobId = result.jobReference.jobId;
     Utilities.sleep(sleepTimeMs);
     sleepTimeMs *= 2;
-    result = BigQuery.Jobs.getQueryResults(
-      projectId,
-      result.jobReference.jobId,
-    );
+    response = UrlFetchApp.fetch(`https://bigquery.googleapis.com/bigquery/v2/projects/${projectId}/queries/${jobId}`, getOptions);
+    result = JSON.parse(response);
   }
+ 
   // row is an Object with key f containing a list of Objects with key v. Index matches schema.
   const values = result.rows.map((row) =>
     row.f.reduce((r, vs) => {
@@ -80,6 +121,7 @@ function retrieveDb() {
 
 function getPGs() {
   const doc = DocumentApp.getActiveDocument();
+  const scriptOptions = getSettings();
   const body = doc.getBody();
   const text = normalize(body.getText());
   const values = retrieveDb();
@@ -139,6 +181,7 @@ function getPGs() {
 function insertPGs(s, pg) {
   const ss = s.toString();
   const doc = DocumentApp.getActiveDocument();
+  const scriptOptions = getSettings();
   const body = doc.getBody();
   const text = body.editAsText();
   const pgformed = `\u00a0(“${pg}”)`;
